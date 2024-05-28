@@ -11,7 +11,7 @@ const Cancel = () => {
         </p>
         <hr />
         <p className="mb-0">
-          You can try again or return to the <Link href="/">home page</Link>.
+          You can try again or return to the <Link to="/">home page</Link>.
         </p>
       </div>
     </div>

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useContext } from "react";
 import GlobalContext from "../GlobalContexts";
 
@@ -13,7 +14,7 @@ export default function ProductCard({ product }) {
         </div>
         <div className="card-footer">
           <div className="d-flex justify-content-between align-items-center">
-            <span className="text-muted">${product.price}</span>
+            <span className="text-muted">{product.price}</span>
             <button
               className="btn btn-primary"
               onClick={() => addToCart(product)}

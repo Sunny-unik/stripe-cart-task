@@ -1,13 +1,12 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import GlobalContext from "../GlobalContexts";
 import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { loadStripe } from "@stripe/stripe-js";
+import envProvider from "../helpers/envProvider";
 
-const stripePromise = loadStripe(
-  "pk_test_51PKvlfSAkmoXMCp79M4XfRpoVXPACnCfnFAHhGrnFfXYtKd1WxXotNAMtbLX7ycF0UjFGHU2K87pkj8OR8dz1rjC00jLirXLpr"
-);
+const stripePromise = loadStripe(envProvider.stripePublicKey);
 export default function Cart() {
   const { removeFromCart, loading, user, emptyCart, cartItems } =
     useContext(GlobalContext);
@@ -22,12 +21,7 @@ export default function Cart() {
       const { data } = await axios.post(
         "http://localhost:4000/payment/create-checkout-session",
         { amount: totalPrice },
-        {
-          headers: {
-            Authorization: `Bearer sk_test_51PKvlfSAkmoXMCp76iTuW9t00bVAjyYQ7Zl8hAABRpa6PluUMq9YxZ9dj8UwoQDUa4hEaZnoWkNaDZxsOPC0GA3B00PP25zmmD`,
-          },
-          withCredentials: true,
-        }
+        { withCredentials: true }
       );
       const stripe = await stripePromise;
       const result = await stripe.redirectToCheckout({
@@ -76,7 +70,7 @@ export default function Cart() {
           })}
           <div className="d-flex align-items-center justify-content-end">
             <div>
-              <span className="me-3">Total amount: ${totalPrice}</span>
+              <span className="me-3">Total amount: {totalPrice}</span>
               <button className="btn btn-success" onClick={handlePayment}>
                 Place Order
               </button>

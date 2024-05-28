@@ -3,7 +3,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
-const expresRateLimit = require("express-rate-limit");
+const expressRateLimit = require("express-rate-limit");
 const errorHandler = require("./middleware/errorHandler");
 const connectDb = require("./db");
 const productRoutes = require("./routes/products");
@@ -23,12 +23,12 @@ app.use(helmet());
 app.use(cors({ origin: validOrigins, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
-// app.use(
-//   expresRateLimit({
-//     windowMs: 15 * 60 * 1000, // 15 minutes
-//     limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
-//   })
-// );
+app.use(
+  expressRateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
+  })
+);
 connectDb();
 
 app.get("/health", (_, res) => res.send("ok"));

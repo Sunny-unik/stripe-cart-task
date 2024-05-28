@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -70,7 +71,6 @@ export const GlobalProvider = ({ children }) => {
         "http://localhost:4000/user/",
         userData
       );
-      if (!data.success) return new Error("Internal server error");
       alert(data.message);
       navigate("/login");
     } catch (error) {
@@ -89,6 +89,7 @@ export const GlobalProvider = ({ children }) => {
         { withCredentials: true }
       );
       setUser(null);
+      setCartItems([]);
     } catch (error) {
       errorOrganizer(error);
     } finally {
