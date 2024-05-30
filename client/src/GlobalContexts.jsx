@@ -67,11 +67,12 @@ export const GlobalProvider = ({ children }) => {
   const signup = async (userData) => {
     try {
       setLoading(true);
-      const { data } = await axios.post(
+      const response = await axios.post(
         "http://localhost:4000/user/",
         userData
       );
-      alert(data.message);
+      if (response.data.error) throw new Error(response);
+      alert(response.data.message);
       navigate("/login");
     } catch (error) {
       errorOrganizer(error);
