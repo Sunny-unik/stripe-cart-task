@@ -1,41 +1,16 @@
 import { useContext } from "react";
 import GlobalContext from "../GlobalContexts";
-import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { loadStripe } from "@stripe/stripe-js";
-import envProvider from "../helpers/envProvider";
 
-const stripePromise = loadStripe(envProvider.stripePublicKey);
 export default function Cart() {
-  const { removeFromCart, loading, user, emptyCart, cartItems } =
+  const { removeFromCart, loading, user, emptyCart, cartItems, handlePayment } =
     useContext(GlobalContext);
   const navigate = useNavigate();
   let totalPrice = 0;
   useEffect(() => {
     if (!loading && !user) navigate("/");
   }, []);
-
-  const handlePayment = async () => {
-    try {
-      const { data } = await axios.post(
-        "http://localhost:4000/payment/create-checkout-session",
-        { amount: totalPrice },
-        { withCredentials: true }
-      );
-      const stripe = await stripePromise;
-      const result = await stripe.redirectToCheckout({
-        sessionId: data.id,
-      });
-
-      if (result.error) {
-        alert(result.error.message);
-        console.log(result.error);
-      }
-    } catch (error) {
-      console.log(error.message || "Internal server error");
-    }
-  };
 
   return (
     <div className="container mx-auto p-6">
@@ -71,7 +46,10 @@ export default function Cart() {
           <div className="d-flex align-items-center justify-content-end">
             <div>
               <span className="me-3">Total amount: {totalPrice}</span>
-              <button className="btn btn-success" onClick={handlePayment}>
+              <button
+                className="btn btn-success"
+                onClick={() => handlePayment(totalPrice)}
+              >
                 Place Order
               </button>
             </div>

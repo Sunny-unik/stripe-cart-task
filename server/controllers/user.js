@@ -106,10 +106,7 @@ const removeFromCart = async (req, res, next) => {
     const user = await userSchema.findById(req.decoded.userId);
     if (!user) throw new Error("User not found");
 
-    const Updated = user.cartItems.filter((id) => {
-      return id !== productId;
-    });
-    user.cartItems = Updated;
+    user.cartItems = user.cartItems.filter((id) => id.toString() !== productId);
     await user.save({ validateBeforeSave: false });
 
     res.send({

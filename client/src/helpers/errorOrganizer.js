@@ -1,10 +1,9 @@
 export default function (error) {
   const response = error.response;
   if (!response) return alert("Internal server error!");
-  const {
-    error: { code, message, errors, fields },
-    message: baseErrorMessage,
-  } = response.data;
+  const { error: innerError, message: baseErrorMessage } = response.data;
+  const { code, message, errors, fields } = innerError || {};
+
   console.error({ message, code });
   const finalizeErrors = fields
     ? Object.keys(fields).map((key) => `This ${key} is already used`)

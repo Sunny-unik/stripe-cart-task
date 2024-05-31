@@ -3,6 +3,10 @@ import { createContext, useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import errorOrganizer from "./helpers/errorOrganizer";
+import { loadStripe } from "@stripe/stripe-js";
+import envProvider from "./helpers/envProvider";
+
+const stripePromise = loadStripe(envProvider.stripePublicKey);
 
 const GlobalContext = createContext();
 
@@ -123,11 +127,13 @@ export const GlobalProvider = ({ children }) => {
   const removeFromCart = async (productId) => {
     try {
       setLoading(true);
-      const { data } = await axios.put(
+      const response = await axios.put(
         "http://localhost:4000/user/removeFromCart",
         { productId },
         { withCredentials: true }
       );
+      const { data } = response;
+      if (data.error) throw new Error(response);
       setUser({ ...data.data });
       setCartItems(cartItems.filter((item) => productId !== item._id));
       alert(data.message);
@@ -156,6 +162,28 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
+  const handlePayment = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/payment/create-checkout-session",
+        {},
+        { withCredentials: true }
+      );
+      const stripe = await stripePromise;
+      const result = await stripe.redirectToCheckout({
+        sessionId: response.data.id,
+      });
+
+      if (result.error) {
+        console.log(result.error);
+        alert(result.error.message);
+      }
+    } catch (error) {
+      console.log(error.message || "Internal server error");
+      errorOrganizer(error);
+    }
+  };
+
   return (
     <GlobalContext.Provider
       value={{
@@ -171,6 +199,7 @@ export const GlobalProvider = ({ children }) => {
         signup,
         checkLoggedIn,
         logout,
+        handlePayment,
       }}
     >
       {children}
